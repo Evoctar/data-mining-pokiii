@@ -1,5 +1,5 @@
 # End-to-End Web Scraping and Data Mining Pipeline
-**Generated:** 2026-05-20 01:53
+**Generated:** 2026-05-20 02:29
 
 ---
 
@@ -20,6 +20,8 @@ This project builds a complete ETL and data mining pipeline on Pokemon data scra
 ---
 
 ## 2. Website Overview
+
+<!-- IMG:website_screenshot.png -->
 
 **pokemondb.net** is a comprehensive Pokemon database. The `/pokedex/all` page renders a
 sortable HTML table listing every Pokemon entry (including alternate forms) with:

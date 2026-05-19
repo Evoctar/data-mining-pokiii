@@ -162,6 +162,8 @@ This project builds a complete ETL and data mining pipeline on Pokemon data scra
 
 ## 2. Website Overview
 
+{_md_img("website_screenshot.png")}
+
 **pokemondb.net** is a comprehensive Pokemon database. The `/pokedex/all` page renders a
 sortable HTML table listing every Pokemon entry (including alternate forms) with:
 
@@ -345,8 +347,9 @@ def markdown_to_html(markdown_text: str) -> str:
             "stats_by_legendary.png":        "Figure: Base Stat Total -- Regular vs Legendary",
             "generation_counts.png":         "Figure: Pokemon Entries per Generation",
             "dashboard.png":                 "Figure: Summary Dashboard",
-            "before_after_cleaning.png":     "Figure: Before vs After Cleaning -- Duplicate Removal",
+            "before_after_cleaning.png":       "Figure: Before vs After Cleaning -- Duplicate Removal",
             "before_after_transformation.png": "Figure: Before vs After Transformation -- MinMaxScaling",
+            "website_screenshot.png":          "Figure: pokemondb.net/pokedex/all -- source website",
         }
         caption = captions.get(filename, filename)
         return _img_tag(filename, caption)
