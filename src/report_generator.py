@@ -61,7 +61,6 @@ table {
     width: 100%;
     margin: 8pt 0;
     font-size: 8.5pt;
-    page-break-inside: avoid;
 }
 th {
     background-color: #2b6cb0;
@@ -391,6 +390,14 @@ def markdown_to_html(markdown_text: str) -> str:
         return _img_tag(filename, caption)
 
     html_body = re.sub(r"<!-- IMG:([^>]+) -->", replace_placeholder, html_body)
+
+    # Wrap every table in keepinframe so it never splits across pages
+    html_body = re.sub(
+        r"(<table[\s\S]*?</table>)",
+        r'<pdf:keepinframe maxHeight="680" flowable="false">\1</pdf:keepinframe>',
+        html_body,
+        flags=re.DOTALL,
+    )
 
     return f"""<!DOCTYPE html>
 <html>
