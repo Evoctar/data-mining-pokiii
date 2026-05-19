@@ -61,6 +61,7 @@ table {
     width: 100%;
     margin: 8pt 0;
     font-size: 8.5pt;
+    page-break-inside: avoid;
 }
 th {
     background-color: #2b6cb0;
