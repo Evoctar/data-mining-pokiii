@@ -7,8 +7,12 @@ Produces:
 """
 
 import re
+import io
 import base64
 import pandas as pd
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
 from pathlib import Path
 from datetime import datetime
 
@@ -363,6 +367,60 @@ COVER_HTML = """
 """
 
 
+def _table_to_img_tag(table_html: str) -> str:
+    """Render an HTML table as a base64 PNG so it never splits across PDF pages."""
+    try:
+        dfs = pd.read_html(io.StringIO(f"<html><body>{table_html}</body></html>"))
+        if not dfs:
+            return table_html
+        df = dfs[0].fillna("").astype(str)
+
+        n_rows, n_cols = len(df), len(df.columns)
+        col_lens = [max(len(str(c)), df[c].str.len().max()) for c in df.columns]
+        total_len = max(sum(col_lens), 1)
+        col_widths = [max(0.05, cl / total_len) for cl in col_lens]
+
+        fig_w = min(12, max(7, n_cols * 1.8))
+        fig_h = max(0.6, (n_rows + 1) * 0.38)
+
+        fig, ax = plt.subplots(figsize=(fig_w, fig_h))
+        ax.axis("off")
+
+        tbl = ax.table(
+            cellText=df.values,
+            colLabels=list(df.columns),
+            cellLoc="left",
+            loc="center",
+            colWidths=col_widths,
+        )
+        tbl.auto_set_font_size(False)
+        tbl.set_fontsize(8)
+        tbl.scale(1, 1.6)
+
+        for j in range(n_cols):
+            cell = tbl[0, j]
+            cell.set_facecolor("#2b6cb0")
+            cell.set_text_props(color="white", fontweight="bold")
+            cell.set_edgecolor("#2b6cb0")
+
+        for i in range(1, n_rows + 1):
+            for j in range(n_cols):
+                cell = tbl[i, j]
+                cell.set_facecolor("#f7fafc" if i % 2 == 0 else "white")
+                cell.set_edgecolor("#cbd5e0")
+
+        plt.tight_layout()
+        buf = io.BytesIO()
+        plt.savefig(buf, format="png", dpi=150, bbox_inches="tight",
+                    facecolor="white", edgecolor="none")
+        plt.close()
+        buf.seek(0)
+        b64 = base64.b64encode(buf.read()).decode()
+        return f'<img src="data:image/png;base64,{b64}" style="width:490pt;margin:6pt 0;" />'
+    except Exception:
+        return table_html
+
+
 def markdown_to_html(markdown_text: str) -> str:
     html_body = md_lib.markdown(
         markdown_text,
@@ -391,10 +449,10 @@ def markdown_to_html(markdown_text: str) -> str:
 
     html_body = re.sub(r"<!-- IMG:([^>]+) -->", replace_placeholder, html_body)
 
-    # Wrap every table in keepinframe so it never splits across pages
+    # Render every table as a PNG image so it can never split across pages
     html_body = re.sub(
-        r"(<table[\s\S]*?</table>)",
-        r'<pdf:keepinframe maxHeight="680" flowable="false">\1</pdf:keepinframe>',
+        r"<table[\s\S]*?</table>",
+        lambda m: _table_to_img_tag(m.group(0)),
         html_body,
         flags=re.DOTALL,
     )
