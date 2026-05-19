@@ -1,27 +1,20 @@
 # End-to-End Web Scraping and Data Mining Pipeline
-### Data Source: BoardGameGeek (BGG)
+### Data Source: pokemondb.net
 
-A complete university data mining project that scrapes board game data from
-[boardgamegeek.com](https://boardgamegeek.com), cleans it, stores it in SQLite,
-and applies Frequent Pattern Mining, Clustering, and Classification.
+A complete university data mining project that scrapes Pokémon data from
+[pokemondb.net/pokedex/all](https://pokemondb.net/pokedex/all), cleans and transforms it,
+stores it in SQLite, and applies Frequent Pattern Mining, Clustering, and Classification.
 
 ---
 
-## How Data is Collected
+## Dataset
 
-**Phase 1 — HTML scraping:**
-Scrapes BGG browse/ranking pages with `requests` + `BeautifulSoup4` to collect
-game IDs and ranks.
+Scraped from the full Pokédex table on pokemondb.net — 1,203 entries (base forms +
+alternate/mega/regional forms) across all 9 generations.
 
-**Phase 2 — BGG XML API:**
-Fetches detailed stats (rating, complexity, players, playtime, category, mechanics)
-for each game via `https://boardgamegeek.com/xmlapi2/thing?id=...&stats=1`.
-Parsed with Python's built-in `xml.etree.ElementTree`.
-
-**Dataset features per game:**
-`game_id`, `name`, `year_published`, `min/max_players`, `min/max_playtime`,
-`avg_playtime`, `min_age`, `avg_rating`, `num_voters`, `complexity`, `bgg_rank`,
-`primary_category`, `primary_mechanic`
+**Features per Pokémon:**
+`number`, `name`, `type1`, `type2`, `total`, `hp`, `attack`, `defense`,
+`sp_atk`, `sp_def`, `speed`, `generation`, `is_legendary`
 
 ---
 
@@ -30,21 +23,20 @@ Parsed with Python's built-in `xml.etree.ElementTree`.
 ```
 project/
 ├── data/
-│   ├── raw_games.csv             ← saved by scraper
-│   ├── cleaned_games.csv         ← saved by cleaning step
-│   └── transformed_games.csv     ← saved by transformation step
+│   ├── raw_pokemon.csv             ← saved by scraper
+│   ├── cleaned_pokemon.csv         ← saved by cleaning step
+│   └── transformed_pokemon.csv     ← saved by transformation step
 ├── output/
-│   ├── association_rules.csv     ← Apriori results
-│   ├── cluster_summary.csv       ← KMeans cluster stats
-│   └── classification_report.txt ← Random Forest metrics
+│   ├── association_rules.csv       ← Apriori results
+│   ├── cluster_summary.csv         ← KMeans cluster stats
+│   └── classification_report.txt   ← Random Forest metrics
 ├── database/
-│   └── games.db                  ← SQLite database
+│   └── pokemon.db                  ← SQLite database
 ├── visuals/
-│   ├── rating_distribution.png
-│   ├── complexity_vs_rating.png
-│   ├── top_categories.png
-│   ├── playtime_by_complexity.png
-│   ├── raw_vs_cleaned.png
+│   ├── total_distribution.png
+│   ├── type_counts.png
+│   ├── stats_by_legendary.png
+│   ├── generation_counts.png
 │   ├── dashboard.png
 │   ├── association_lift.png
 │   ├── elbow_chart.png
@@ -52,7 +44,8 @@ project/
 │   ├── confusion_matrix.png
 │   └── feature_importance.png
 ├── reports/
-│   └── report.md                 ← auto-generated markdown report
+│   ├── report.md                   ← auto-generated Markdown report
+│   └── report.pdf                  ← styled PDF with all charts embedded
 ├── src/
 │   ├── scraper.py
 │   ├── cleaning.py
@@ -101,20 +94,17 @@ python src/main.py
 ```
 
 **Pipeline steps:**
-1. Scrape ~400 board game IDs from BGG browse pages
-2. Fetch detailed stats for each game via BGG XML API
-3. Clean and validate data
-4. Engineer features (buckets, encodings, scaling)
-5. Run Apriori association rule mining
-6. KMeans clustering with elbow method
-7. Random Forest classification (predict rating bucket)
-8. Store all data in SQLite
-9. Generate 11 charts
-10. Write Markdown report
+1. Scrape all 1,200+ entries from pokemondb.net/pokedex/all
+2. Clean and validate data (remove duplicates, fix missing values)
+3. Engineer features (stat tier buckets, type encoding, MinMax scaling)
+4. Run Apriori association rule mining
+5. KMeans clustering on base stats with elbow method
+6. Random Forest classification — predict legendary status (94% accuracy)
+7. Store all data in SQLite (`pokemon.db`)
+8. Generate 10 charts (Matplotlib / Seaborn)
+9. Write Markdown + PDF report
 
-> **Note:** The scraper makes ~30 API batch requests with 1.5 s delays.
-> Expect the full pipeline to take **3–8 minutes** on first run.
-> To re-run without re-scraping, comment out the scraping step in `main.py`.
+> The scraper fetches a single page — the full pipeline completes in **under 10 seconds**.
 
 ---
 
@@ -129,8 +119,22 @@ python src/clustering.py       # clustering + charts
 python src/classification.py   # classification + metrics
 python src/database.py         # populate SQLite
 python src/visualization.py    # generate all charts
-python src/report_generator.py # write report.md
+python src/report_generator.py # write report.md + report.pdf
 ```
+
+---
+
+## Key Results
+
+| Metric | Value |
+|--------|-------|
+| Total entries scraped | 1,219 |
+| After cleaning | 1,203 |
+| Legendary / Mythical | 136 |
+| Association rules found | 183 |
+| Top rule lift | 5.44 (Legendary → Uber tier) |
+| KMeans clusters | 3 |
+| Classification accuracy | 94% |
 
 ---
 
@@ -138,14 +142,15 @@ python src/report_generator.py # write report.md
 
 | Output | Location |
 |--------|----------|
-| Raw data | `data/raw_games.csv` |
-| Cleaned data | `data/cleaned_games.csv` |
+| Raw data | `data/raw_pokemon.csv` |
+| Cleaned data | `data/cleaned_pokemon.csv` |
 | Association rules | `output/association_rules.csv` |
 | Cluster summary | `output/cluster_summary.csv` |
 | Classification report | `output/classification_report.txt` |
-| SQLite database | `database/games.db` |
-| 11 chart images | `visuals/*.png` |
+| SQLite database | `database/pokemon.db` |
+| 10 chart images | `visuals/*.png` |
 | Markdown report | `reports/report.md` |
+| PDF report | `reports/report.pdf` |
 
 ---
 
@@ -153,14 +158,15 @@ python src/report_generator.py # write report.md
 
 | Library | Purpose |
 |---------|---------|
-| `requests` | HTTP requests (browse pages + API) |
-| `beautifulsoup4` | HTML parsing of browse pages |
-| `xml.etree.ElementTree` | XML API response parsing (stdlib) |
+| `requests` | HTTP requests |
+| `beautifulsoup4` | HTML parsing |
 | `pandas` | Data manipulation |
 | `numpy` | Numerical operations |
-| `scikit-learn` | ML (clustering, classification, encoding, scaling) |
+| `scikit-learn` | Clustering, classification, encoding, scaling |
 | `mlxtend` | Apriori algorithm |
 | `matplotlib` | Plotting |
 | `seaborn` | Statistical visualizations |
-| `sqlite3` | Database (stdlib — no install needed) |
-| `tabulate` | Markdown table rendering in reports |
+| `sqlite3` | Database (stdlib) |
+| `tabulate` | Markdown table rendering |
+| `markdown` | Markdown → HTML conversion |
+| `xhtml2pdf` | HTML → PDF generation |
