@@ -214,6 +214,8 @@ sortable HTML table listing every Pokemon entry (including alternate forms) with
 ### Pokemon per Generation
 {gen_dist}
 
+{_md_img("before_after_cleaning.png")}
+
 ---
 
 ## 6. Transformation Process
@@ -224,6 +226,8 @@ sortable HTML table listing every Pokemon entry (including alternate forms) with
 | type1_encoded | LabelEncoder -- integer per type |
 | has_second_type | 1 if dual-typed, 0 if mono-type |
 | *_scaled | MinMaxScaler to [0, 1] for all 7 numeric stat columns |
+
+{_md_img("before_after_transformation.png")}
 
 ---
 
@@ -331,16 +335,18 @@ def markdown_to_html(markdown_text: str) -> str:
     def replace_placeholder(match):
         filename = match.group(1)
         captions = {
-            "association_lift.png":   "Figure: Top Association Rules by Lift",
-            "elbow_chart.png":        "Figure: Elbow Method -- Optimal k Selection",
-            "cluster_scatter.png":    "Figure: KMeans Clusters -- PCA 2D Projection (* = Legendary)",
-            "confusion_matrix.png":   "Figure: Confusion Matrix -- Legendary Classification",
-            "feature_importance.png": "Figure: Random Forest Feature Importances",
-            "total_distribution.png": "Figure: Distribution of Base Stat Totals",
-            "type_counts.png":        "Figure: Pokemon Count by Primary Type",
-            "stats_by_legendary.png": "Figure: Base Stat Total -- Regular vs Legendary",
-            "generation_counts.png":  "Figure: Pokemon Entries per Generation",
-            "dashboard.png":          "Figure: Summary Dashboard",
+            "association_lift.png":          "Figure: Top Association Rules by Lift",
+            "elbow_chart.png":               "Figure: Elbow Method -- Optimal k Selection",
+            "cluster_scatter.png":           "Figure: KMeans Clusters -- PCA 2D Projection (* = Legendary)",
+            "confusion_matrix.png":          "Figure: Confusion Matrix -- Legendary Classification",
+            "feature_importance.png":        "Figure: Random Forest Feature Importances",
+            "total_distribution.png":        "Figure: Distribution of Base Stat Totals",
+            "type_counts.png":               "Figure: Pokemon Count by Primary Type",
+            "stats_by_legendary.png":        "Figure: Base Stat Total -- Regular vs Legendary",
+            "generation_counts.png":         "Figure: Pokemon Entries per Generation",
+            "dashboard.png":                 "Figure: Summary Dashboard",
+            "before_after_cleaning.png":     "Figure: Before vs After Cleaning -- Duplicate Removal",
+            "before_after_transformation.png": "Figure: Before vs After Transformation -- MinMaxScaling",
         }
         caption = captions.get(filename, filename)
         return _img_tag(filename, caption)

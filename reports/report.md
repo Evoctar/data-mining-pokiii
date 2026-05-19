@@ -1,12 +1,12 @@
 # End-to-End Web Scraping and Data Mining Pipeline
-**Generated:** 2026-05-20 00:45
+**Generated:** 2026-05-20 01:53
 
 ---
 
 ## 1. Project Overview
 
-This project builds a complete ETL and data mining pipeline on Pokémon data scraped from
-[pokemondb.net](https://pokemondb.net/pokedex/all) — a freely accessible Pokédex database.
+This project builds a complete ETL and data mining pipeline on Pokemon data scraped from
+[pokemondb.net](https://pokemondb.net/pokedex/all) -- a freely accessible Pokedex database.
 
 | Item | Detail |
 |------|--------|
@@ -15,39 +15,39 @@ This project builds a complete ETL and data mining pipeline on Pokémon data scr
 | Total Entries | 1203 |
 | Features | 13 |
 | Legendary / Mythical | 136 out of 1203 |
-| Pipeline | Scrape → Clean → Transform → Mine → Cluster → Classify → Store → Visualize |
+| Pipeline | Scrape -> Clean -> Transform -> Mine -> Cluster -> Classify -> Store -> Visualize |
 
 ---
 
 ## 2. Website Overview
 
-**pokemondb.net** is a comprehensive Pokémon database. The `/pokedex/all` page renders a
-sortable HTML table listing every Pokémon entry (including alternate forms) with:
+**pokemondb.net** is a comprehensive Pokemon database. The `/pokedex/all` page renders a
+sortable HTML table listing every Pokemon entry (including alternate forms) with:
 
-- **Number** — National Pokédex number
-- **Name** — Pokémon name (includes form names, e.g. "Venusaur-Mega")
-- **Type 1 / Type 2** — Primary and secondary elemental types
-- **Total** — Sum of all six base stats
-- **HP, Attack, Defense, Sp. Atk, Sp. Def, Speed** — Individual base stats
-- **Generation** — Derived from Pokédex number ranges
-- **is_legendary** — 1 if Legendary or Mythical, 0 otherwise
+- **Number** -- National Pokedex number
+- **Name** -- Pokemon name (includes form names, e.g. "Venusaur-Mega")
+- **Type 1 / Type 2** -- Primary and secondary elemental types
+- **Total** -- Sum of all six base stats
+- **HP, Attack, Defense, Sp. Atk, Sp. Def, Speed** -- Individual base stats
+- **Generation** -- Derived from Pokedex number ranges
+- **is_legendary** -- 1 if Legendary or Mythical, 0 otherwise
 
 ---
 
 ## 3. Scraping Methodology
 
 - **Library:** requests + BeautifulSoup4
-- **Pages scraped:** Single page — full table loads server-side with no pagination
+- **Pages scraped:** Single page -- full table loads server-side with no pagination
 - **Rows collected:** 1203 entries (base forms + alternate/regional/mega forms)
-- **Legendary flag:** Derived from a curated set of National Dex numbers (Gens 1–9)
-- **Generation:** Assigned by Pokédex number ranges — no extra HTTP requests required
+- **Legendary flag:** Derived from a curated set of National Dex numbers (Gens 1-9)
+- **Generation:** Assigned by Pokedex number ranges -- no extra HTTP requests required
 - **Politeness:** Single page fetch with 15 s timeout; 3 retries with 2 s back-off
 
 ---
 
 ## 4. Raw Data Snapshot
 
-**Shape:** 1203 rows × 13 columns
+**Shape:** 1203 rows x 13 columns
 
 |   number | name       | type1   | type2   |   total |   hp |   attack |   defense |   sp_atk |   sp_def |   speed |   generation |   is_legendary |
 |---------:|:-----------|:--------|:--------|--------:|-----:|---------:|----------:|---------:|---------:|--------:|-------------:|---------------:|
@@ -65,7 +65,7 @@ sortable HTML table listing every Pokémon entry (including alternate forms) wit
 |------|--------|
 | Duplicates | Removed exact duplicate rows |
 | Missing stats | Filled with column median |
-| Missing types | type1 → "Normal", type2 → "None" |
+| Missing types | type1 -> "Normal", type2 -> "None" |
 | Invalid types | Replaced with "Unknown" / "None" |
 | Generation | Filled missing with 1 |
 | is_legendary | Filled missing with 0 |
@@ -96,7 +96,7 @@ sortable HTML table listing every Pokémon entry (including alternate forms) wit
 | Dark     |      57 |
 | Fighting |      51 |
 
-### Pokémon per Generation
+### Pokemon per Generation
 |   generation |   count |
 |-------------:|--------:|
 |            1 |     206 |
@@ -109,16 +109,20 @@ sortable HTML table listing every Pokémon entry (including alternate forms) wit
 |            8 |     107 |
 |            9 |     128 |
 
+<!-- IMG:before_after_cleaning.png -->
+
 ---
 
 ## 6. Transformation Process
 
 | Feature | Transformation |
 |---------|---------------|
-| stat_tier | Very Weak (<300) / Weak (300–399) / Average (400–499) / Strong (500–599) / Uber (>=600) |
-| type1_encoded | LabelEncoder — integer per type |
+| stat_tier | Very Weak (<300) / Weak (300-399) / Average (400-499) / Strong (500-599) / Uber (>=600) |
+| type1_encoded | LabelEncoder -- integer per type |
 | has_second_type | 1 if dual-typed, 0 if mono-type |
 | *_scaled | MinMaxScaler to [0, 1] for all 7 numeric stat columns |
+
+<!-- IMG:before_after_transformation.png -->
 
 ---
 
@@ -126,7 +130,7 @@ sortable HTML table listing every Pokémon entry (including alternate forms) wit
 
 **Algorithm:** Apriori (mlxtend) | **Min support:** 0.05 | **Min confidence:** 0.30
 
-Each Pokémon is represented as a basket:
+Each Pokemon is represented as a basket:
 `type1=<type>`, `tier=<tier>`, `gen=<group>`, `dual_type=Yes/No`, `legendary=Yes/No`
 
 ### Top 10 Association Rules (sorted by Lift)
@@ -153,7 +157,7 @@ Each Pokémon is represented as a basket:
 ## 8. Clustering Results
 
 **Algorithm:** KMeans | **Features:** hp, attack, defense, sp_atk, sp_def, speed (all scaled)
-**Optimal k:** selected via elbow method | **Visualization:** PCA 2D projection (legendaries marked *)
+**Optimal k:** selected via elbow method | **Visualization:** PCA 2D projection (* = Legendary)
 
 ### Cluster Summary
 
@@ -172,7 +176,7 @@ Each Pokémon is represented as a basket:
 ## 9. Classification Results
 
 **Model:** Random Forest (100 estimators)
-**Target:** is_legendary — Regular (0) vs Legendary/Mythical (1)
+**Target:** is_legendary -- Regular (0) vs Legendary/Mythical (1)
 **Features:** total, hp, attack, defense, sp_atk, sp_def, speed, type1_encoded, has_second_type, generation
 **Split:** 80% train / 20% test (stratified)
 
@@ -244,10 +248,10 @@ CREATE TABLE pokemon (
 
 ## 12. Final Findings
 
-- The dataset spans 1203 Pokémon entries (including alternate forms) across 9 generations.
-- Legendary and Mythical Pokémon (136 total) have significantly higher base stat totals.
+- The dataset spans 1203 Pokemon entries (including alternate forms) across 9 generations.
+- Legendary and Mythical Pokemon (136 total) have significantly higher base stat totals.
 - Water is the most common primary type; Dragon and Ghost are among the rarest.
-- Top association rule: Legendary → Uber stat tier (lift ≈ 5.4) — legendaries are 5× more likely to have 600+ total stats.
+- Top association rule: Legendary -> Uber stat tier (lift ~5.4) -- legendaries are 5x more likely to have 600+ total stats.
 - KMeans (k=3) separates low-stat basics, physical powerhouses, and fast/special attackers.
 - Random Forest predicts legendary status with ~94% accuracy; base stat total is the strongest predictor (40% importance).
 

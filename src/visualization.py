@@ -14,6 +14,7 @@ import seaborn as sns
 from pathlib import Path
 
 CLEAN_INPUT = Path(__file__).parent.parent / "data" / "cleaned_pokemon.csv"
+RAW_INPUT   = Path(__file__).parent.parent / "data" / "raw_pokemon.csv"
 VISUALS_DIR = Path(__file__).parent.parent / "visuals"
 
 
@@ -132,6 +133,73 @@ def plot_dashboard(df: pd.DataFrame):
     print(f"  Saved: {path}")
 
 
+def plot_before_after_cleaning(raw_df: pd.DataFrame, clean_df: pd.DataFrame):
+    fig, axes = plt.subplots(1, 2, figsize=(13, 5))
+    for ax, df, title, color in zip(
+        axes,
+        [raw_df, clean_df],
+        [f"Before Cleaning  (n = {len(raw_df)})", f"After Cleaning  (n = {len(clean_df)})"],
+        ["salmon", "steelblue"],
+    ):
+        totals = pd.to_numeric(df["total"], errors="coerce").dropna()
+        sns.histplot(totals, bins=30, kde=True, color=color, ax=ax)
+        ax.set_xlabel("Base Stat Total", fontsize=11)
+        ax.set_ylabel("Count", fontsize=11)
+        ax.set_title(title, fontsize=12, fontweight="bold")
+        ax.grid(axis="y", alpha=0.3)
+
+    removed = len(raw_df) - len(clean_df)
+    plt.suptitle(f"Before vs After Cleaning — {removed} duplicate rows removed",
+                 fontsize=14, fontweight="bold")
+    plt.tight_layout()
+    path = VISUALS_DIR / "before_after_cleaning.png"
+    plt.savefig(path, dpi=150, bbox_inches="tight")
+    plt.close()
+    print(f"  Saved: {path}")
+
+
+def plot_before_after_transformation(clean_df: pd.DataFrame):
+    from sklearn.preprocessing import MinMaxScaler
+
+    stat_cols = ["hp", "attack", "defense", "sp_atk", "sp_def", "speed"]
+    scaler = MinMaxScaler()
+    scaled = pd.DataFrame(scaler.fit_transform(clean_df[stat_cols]), columns=stat_cols)
+
+    fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+
+    bp1 = axes[0].boxplot(
+        [clean_df[c].dropna() for c in stat_cols],
+        tick_labels=stat_cols, patch_artist=True,
+    )
+    for patch in bp1["boxes"]:
+        patch.set_facecolor("salmon")
+        patch.set_alpha(0.7)
+    axes[0].set_title("Before Transformation\n(Raw stat values)", fontsize=12, fontweight="bold")
+    axes[0].set_ylabel("Stat Value (0 – 255+)", fontsize=11)
+    axes[0].tick_params(axis="x", rotation=30)
+    axes[0].grid(axis="y", alpha=0.3)
+
+    bp2 = axes[1].boxplot(
+        [scaled[c] for c in stat_cols],
+        tick_labels=stat_cols, patch_artist=True,
+    )
+    for patch in bp2["boxes"]:
+        patch.set_facecolor("steelblue")
+        patch.set_alpha(0.7)
+    axes[1].set_title("After Transformation\n(MinMaxScaled to [0, 1])", fontsize=12, fontweight="bold")
+    axes[1].set_ylabel("Scaled Value (0 – 1)", fontsize=11)
+    axes[1].tick_params(axis="x", rotation=30)
+    axes[1].grid(axis="y", alpha=0.3)
+
+    plt.suptitle("Before vs After Transformation — Base Stat Scaling",
+                 fontsize=14, fontweight="bold")
+    plt.tight_layout()
+    path = VISUALS_DIR / "before_after_transformation.png"
+    plt.savefig(path, dpi=150, bbox_inches="tight")
+    plt.close()
+    print(f"  Saved: {path}")
+
+
 def run_visualizations(clean_df: pd.DataFrame = None, raw_df: pd.DataFrame = None):
     print("=" * 60)
     print("STEP 8: VISUALIZATIONS")
@@ -141,6 +209,8 @@ def run_visualizations(clean_df: pd.DataFrame = None, raw_df: pd.DataFrame = Non
 
     if clean_df is None:
         clean_df = pd.read_csv(CLEAN_INPUT)
+    if raw_df is None and RAW_INPUT.exists():
+        raw_df = pd.read_csv(RAW_INPUT)
 
     print()
     plot_total_distribution(clean_df)
@@ -148,6 +218,9 @@ def run_visualizations(clean_df: pd.DataFrame = None, raw_df: pd.DataFrame = Non
     plot_stats_by_legendary(clean_df)
     plot_generation_counts(clean_df)
     plot_dashboard(clean_df)
+    if raw_df is not None:
+        plot_before_after_cleaning(raw_df, clean_df)
+    plot_before_after_transformation(clean_df)
 
     print("\n  All visualizations saved to visuals/")
 
