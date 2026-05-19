@@ -325,17 +325,17 @@ CREATE TABLE pokemon (
 
 
 COVER_HTML = """
-<div style="page-break-after: always; text-align: center; padding-top: 180pt;">
-    <p style="font-size: 11pt; color: #2b6cb0; letter-spacing: 1pt; margin-bottom: 12pt;">
+<div style="text-align: center; padding-top: 100pt;">
+    <p style="font-size: 11pt; color: #2b6cb0; letter-spacing: 1pt; margin-bottom: 10pt;">
         E-JUST — End-to-End Web Scraping and Data Mining Pipeline
     </p>
     <h1 style="font-size: 26pt; color: #1a365d; border: none; margin-bottom: 6pt;">
-        Pokémon Data Mining Pipeline
+        Pokemon Data Mining Pipeline
     </h1>
-    <p style="font-size: 13pt; color: #4a5568; margin-bottom: 60pt;">
+    <p style="font-size: 13pt; color: #4a5568; margin-bottom: 30pt;">
         Web Scraping · Frequent Pattern Mining · Clustering · Classification
     </p>
-    <hr style="border-top: 1pt solid #cbd5e0; width: 60%; margin: 0 auto 40pt auto;" />
+    <hr style="border-top: 1pt solid #cbd5e0; width: 60%; margin: 0 auto 20pt auto;" />
     <table style="margin: 0 auto; border-collapse: collapse; width: 55%; font-size: 12pt;">
         <tr>
             <th style="background-color: #2b6cb0; color: #fff; padding: 8pt 20pt; text-align: left; border: 0.5pt solid #2b6cb0;">Name</th>
@@ -359,6 +359,7 @@ COVER_HTML = """
         </tr>
     </table>
 </div>
+<pdf:nextpage />
 """
 
 
