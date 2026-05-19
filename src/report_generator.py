@@ -324,6 +324,44 @@ CREATE TABLE pokemon (
 """
 
 
+COVER_HTML = """
+<div style="page-break-after: always; text-align: center; padding-top: 180pt;">
+    <p style="font-size: 11pt; color: #2b6cb0; letter-spacing: 1pt; margin-bottom: 12pt;">
+        E-JUST — End-to-End Web Scraping and Data Mining Pipeline
+    </p>
+    <h1 style="font-size: 26pt; color: #1a365d; border: none; margin-bottom: 6pt;">
+        Pokémon Data Mining Pipeline
+    </h1>
+    <p style="font-size: 13pt; color: #4a5568; margin-bottom: 60pt;">
+        Web Scraping · Frequent Pattern Mining · Clustering · Classification
+    </p>
+    <hr style="border-top: 1pt solid #cbd5e0; width: 60%; margin: 0 auto 40pt auto;" />
+    <table style="margin: 0 auto; border-collapse: collapse; width: 55%; font-size: 12pt;">
+        <tr>
+            <th style="background-color: #2b6cb0; color: #fff; padding: 8pt 20pt; text-align: left; border: 0.5pt solid #2b6cb0;">Name</th>
+            <th style="background-color: #2b6cb0; color: #fff; padding: 8pt 20pt; text-align: left; border: 0.5pt solid #2b6cb0;">ID</th>
+        </tr>
+        <tr>
+            <td style="padding: 7pt 20pt; border: 0.5pt solid #cbd5e0;">Youssef Ahmed Rgab</td>
+            <td style="padding: 7pt 20pt; border: 0.5pt solid #cbd5e0;">320230185</td>
+        </tr>
+        <tr>
+            <td style="padding: 7pt 20pt; border: 0.5pt solid #cbd5e0; background-color: #f7fafc;">Seif Mohamed</td>
+            <td style="padding: 7pt 20pt; border: 0.5pt solid #cbd5e0; background-color: #f7fafc;">320230186</td>
+        </tr>
+        <tr>
+            <td style="padding: 7pt 20pt; border: 0.5pt solid #cbd5e0;">Mohamed Khaled</td>
+            <td style="padding: 7pt 20pt; border: 0.5pt solid #cbd5e0;">320230211</td>
+        </tr>
+        <tr>
+            <td style="padding: 7pt 20pt; border: 0.5pt solid #cbd5e0; background-color: #f7fafc;">Yehia Shady</td>
+            <td style="padding: 7pt 20pt; border: 0.5pt solid #cbd5e0; background-color: #f7fafc;">320230215</td>
+        </tr>
+    </table>
+</div>
+"""
+
+
 def markdown_to_html(markdown_text: str) -> str:
     html_body = md_lib.markdown(
         markdown_text,
@@ -359,6 +397,7 @@ def markdown_to_html(markdown_text: str) -> str:
 <style>{PDF_CSS}</style>
 </head>
 <body>
+{COVER_HTML}
 {html_body}
 </body>
 </html>"""
