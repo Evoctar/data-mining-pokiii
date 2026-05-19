@@ -1,0 +1,25 @@
+Random Forest Classification Report
+Target: is_legendary (0=Regular, 1=Legendary/Mythical)
+==================================================
+Accuracy: 0.9378
+
+              precision    recall  f1-score   support
+
+     Regular       0.97      0.96      0.96       214
+   Legendary       0.71      0.74      0.73        27
+
+    accuracy                           0.94       241
+   macro avg       0.84      0.85      0.85       241
+weighted avg       0.94      0.94      0.94       241
+
+Feature Importances:
+total              0.398791
+sp_atk             0.103571
+speed              0.097169
+hp                 0.086298
+attack             0.078405
+sp_def             0.072013
+generation         0.069130
+defense            0.051572
+type1_encoded      0.035627
+has_second_type    0.007424

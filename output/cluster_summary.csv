@@ -1,0 +1,4 @@
+cluster,count,avg_total,avg_hp,avg_attack,avg_defense,avg_speed,legendary_count,top_type
+0,449,314.1,52.6,54.3,53.4,51.6,4,Normal
+1,402,492.5,81.5,102.8,93.8,69.7,29,Normal
+2,352,554.1,83.4,91.4,81.9,93.6,103,Psychic
